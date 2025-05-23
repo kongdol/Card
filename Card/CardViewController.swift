@@ -13,10 +13,18 @@ class CardViewController: UIViewController {
     
     var firstSelectedIndexPath: IndexPath? // 첫번째 선택 셀 위치
     var secondSelectedIndexPath: IndexPath? // 두번째 선택 셀 위치
+    var isSelectionLocked = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+    }
+    
+    // 선택초기화, 잠금해제
+    func resetSelection() {
+        firstSelectedIndexPath = nil
+        secondSelectedIndexPath = nil
+        isSelectionLocked = false
     }
     
     func checkForMatch() {
@@ -34,18 +42,18 @@ class CardViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 firstCell.isHidden = true
                 secondCell.isHidden = true
+                
+                self.resetSelection()
             }
         } else {
             // 오답 1 초 뒤에 다시 뒤집힘
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 firstCell.flip()
                 secondCell.flip()
+                
+                self.resetSelection()
             }
         }
-        
-        // 선택초기화
-        firstSelectedIndexPath = nil
-        secondSelectedIndexPath = nil
     }
 }
 
@@ -53,22 +61,27 @@ class CardViewController: UIViewController {
 
 extension CardViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // 선택 잠금 중이면 클릭무시
+        if isSelectionLocked { return }
+        
         guard let cell = collectionView.cellForItem(at: indexPath) as? CardCollectionViewCell else { return }
         
-        // 이미 선택한 셀 다시 클릭 못하게
+        // 같은셀 다시 클릭 못하게
         if indexPath == firstSelectedIndexPath { return }
         
-        // 카드 앞면 보이게 뒤집기
+        // 선택한 카드 숫자 보이게 뒤집기
         cell.flip()
         
-        // 첫번째 선택이면
+        // 첫번째 선택
         if firstSelectedIndexPath == nil {
             firstSelectedIndexPath = indexPath
         }
+        // 두번쨰 선택
         else if secondSelectedIndexPath == nil {
             secondSelectedIndexPath = indexPath
             
-            // 두개 다 선택 됬으면 비교
+            // 두개 다 선택 됬으면 비교, 잠금
+            isSelectionLocked = true
             checkForMatch()
         }
     }

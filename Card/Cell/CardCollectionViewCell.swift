@@ -10,8 +10,8 @@ import UIKit
 class CardCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var cardContainerView: UIView!
-    @IBOutlet weak var backView: UIView!
-    @IBOutlet weak var frontView: UIView!
+    @IBOutlet weak var backView: UIView! // 이미지
+    @IBOutlet weak var frontView: UIView! // 레이블
     
     
     @IBOutlet weak var backImageView: UIImageView!
