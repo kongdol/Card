@@ -8,16 +8,26 @@
 import UIKit
 
 class CardViewController: UIViewController {
-    
     @IBOutlet weak var cardCollectionView: UICollectionView!
     
     var firstSelectedIndexPath: IndexPath? // 첫번째 선택 셀 위치
     var secondSelectedIndexPath: IndexPath? // 두번째 선택 셀 위치
     var isSelectionLocked = false
     
+    var cards: [Card] = []
+    var wrongAttemps: Int = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCard()
+    }
+    
+    private func setupCard() {
+        let randomNumbers = Array(1...20).shuffled().prefix(10)
+        let duplicatedNumbers = (randomNumbers + randomNumbers).shuffled()
         
+        cards = duplicatedNumbers.map { Card(number: $0)}
+        cardCollectionView.reloadData()
     }
     
     // 선택초기화, 잠금해제
@@ -29,28 +39,45 @@ class CardViewController: UIViewController {
     
     func checkForMatch() {
         guard let firstIndex = firstSelectedIndexPath,
-              let secondIndex = secondSelectedIndexPath,
-              let firstCell = cardCollectionView.cellForItem(at: firstIndex) as? CardCollectionViewCell,
+              let secondIndex = secondSelectedIndexPath
+        else { return }
+        
+        let firstCard = cards[firstIndex.row]
+        let secondCard = cards[secondIndex.row]
+                
+                
+        guard let firstCell = cardCollectionView.cellForItem(at: firstIndex) as? CardCollectionViewCell,
               let secondCell = cardCollectionView.cellForItem(at: secondIndex) as? CardCollectionViewCell
         else { return }
         
-        let firstValue = firstCell.frontLabel.text
-        let secondValue = secondCell.frontLabel.text
+        let isMatch = firstCard.number == secondCard.number
         
-        if firstValue == secondValue {
-            // 정답 0.5초 뒤에 사라짐
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        if isMatch {
+            // 정답
+            cards[firstIndex.row].isMatched = true
+            cards[secondIndex.row].isMatched = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 firstCell.isHidden = true
                 secondCell.isHidden = true
-                
                 self.resetSelection()
             }
         } else {
-            // 오답 1 초 뒤에 다시 뒤집힘
+            // 오답
+            let isWrongAttemp = firstCard.hasBeenSeen || secondCard.hasBeenSeen
+            
+            if isWrongAttemp {
+                wrongAttemps += 1
+                print("오답횟수 : \(wrongAttemps)")
+            }
+            
+            // 카드 뒤집은적 있다고 표시
+            cards[firstIndex.row].hasBeenSeen = true
+            cards[secondIndex.row].hasBeenSeen = true
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 firstCell.flip()
                 secondCell.flip()
-                
                 self.resetSelection()
             }
         }
@@ -64,10 +91,14 @@ extension CardViewController: UICollectionViewDelegate {
         // 선택 잠금 중이면 클릭무시
         if isSelectionLocked { return }
         
+        if indexPath == firstSelectedIndexPath { return }
+        
+        let selectedCard = cards[indexPath.row]
+        
+        guard !selectedCard.isMatched else { return } // 이미 맞춘카드 클릭 무시
+        
         guard let cell = collectionView.cellForItem(at: indexPath) as? CardCollectionViewCell else { return }
         
-        // 같은셀 다시 클릭 못하게
-        if indexPath == firstSelectedIndexPath { return }
         
         // 선택한 카드 숫자 보이게 뒤집기
         cell.flip()
@@ -90,14 +121,15 @@ extension CardViewController: UICollectionViewDelegate {
 
 extension CardViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return cards.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CardCollectionViewCell.self), for: indexPath) as! CardCollectionViewCell
         
-        cell.frontLabel.text = [indexPath.row + 1].map(String.init).joined()
+        let card = cards[indexPath.row]
+        cell.frontLabel.text = String(card.number)
         
         
         return cell
