@@ -20,7 +20,6 @@ class CardCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        frontLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 30, weight: .bold)
         
         self.layer.borderColor = UIColor.black.cgColor
         self.layer.borderWidth = 2
@@ -28,10 +27,22 @@ class CardCollectionViewCell: UICollectionViewCell {
         self.layer.cornerRadius = 8.0
         self.layer.masksToBounds = true
         
-        
         frontView.isHidden = true
         backView.isHidden = false
         isFlipped = true
+    }
+    
+    // 1/ 4열, 2~3/ 5열, 4~6/ 6열, 7/ 7열
+    func configure(level: Int) {
+        if level == 1 {
+            frontLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 35, weight: .bold)
+        } else if level <= 3 {
+            frontLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 32, weight: .bold)
+        } else if level <= 6 {
+            frontLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 30, weight: .bold)
+        } else {
+            frontLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 26, weight: .bold)
+        }
     }
     
     // 셀 재사용 될때도 상태 초기화
