@@ -15,28 +15,54 @@ class CardViewController: UIViewController {
     var isSelectionLocked = false
     
     var cards: [Card] = []
-    var wrongAttemps: Int = 0
+    var wrongAttempts: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCard()
+        cardCheck()
     }
     
+    
+    @IBAction func restartButton(_ sender: UIButton) {
+        resetGame()
+    }
+    
+    func cardCheck(){
+        
+    }
+    
+    func resetGame() {
+        // 오답 횟수 초기화
+        wrongAttempts = 0
+        // 선택 상태 초기화
+        resetSelection()
+        // 카드 다시 섞고 상태 초기화
+        setupCard()
+    }
+    
+    // MARK: 랜덤으로 같은 숫자 10개
     private func setupCard() {
         let randomNumbers = Array(1...20).shuffled().prefix(10)
         let duplicatedNumbers = (randomNumbers + randomNumbers).shuffled()
         
         cards = duplicatedNumbers.map { Card(number: $0)}
+        
+//        print("생성된 카드 숫자 배열: \(cards.map { $0.number })")
+//        print("생성된 카드 숫자 오름차순 배열: \(cards.map { $0.number }.sorted())")
+        
+        
         cardCollectionView.reloadData()
     }
     
-    // 선택초기화, 잠금해제
+    // MARK: 선택초기화, 잠금해제
     func resetSelection() {
         firstSelectedIndexPath = nil
         secondSelectedIndexPath = nil
         isSelectionLocked = false
     }
     
+    // MARK: 정답오답확인
     func checkForMatch() {
         guard let firstIndex = firstSelectedIndexPath,
               let secondIndex = secondSelectedIndexPath
@@ -64,11 +90,11 @@ class CardViewController: UIViewController {
             }
         } else {
             // 오답
-            let isWrongAttemp = firstCard.hasBeenSeen || secondCard.hasBeenSeen
+            let isWrongAttempt = firstCard.hasBeenSeen || secondCard.hasBeenSeen
             
-            if isWrongAttemp {
-                wrongAttemps += 1
-                print("오답횟수 : \(wrongAttemps)")
+            if isWrongAttempt {
+                wrongAttempts += 1
+                print("오답횟수 : \(wrongAttempts)")
             }
             
             // 카드 뒤집은적 있다고 표시
@@ -84,8 +110,7 @@ class CardViewController: UIViewController {
     }
 }
 
-
-
+// MARK: - Delegate - 선택했을때
 extension CardViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 선택 잠금 중이면 클릭무시
@@ -118,7 +143,7 @@ extension CardViewController: UICollectionViewDelegate {
     }
 }
 
-
+// MARK: - DataSource - 갯수, 내용
 extension CardViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cards.count
@@ -131,13 +156,14 @@ extension CardViewController: UICollectionViewDataSource {
         let card = cards[indexPath.row]
         cell.frontLabel.text = String(card.number)
         
+        cell.isHidden = false
         
         return cell
     }
     
 }
 
-
+// MARK: - DelegateFlowLayout - 크기,여백
 extension CardViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,

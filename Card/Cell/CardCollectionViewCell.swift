@@ -29,7 +29,6 @@ class CardCollectionViewCell: UICollectionViewCell {
         self.layer.masksToBounds = true
         
         
-        
         frontView.isHidden = true
         backView.isHidden = false
         isFlipped = true
