@@ -16,10 +16,11 @@ class CardViewController: UIViewController {
     
     var cards: [Card] = []
     var wrongAttempts: Int = 0
+    var currentLevel: Int = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCard()
+        setupCard(for: currentLevel)
         cardCheck()
     }
     
@@ -38,20 +39,38 @@ class CardViewController: UIViewController {
         // 선택 상태 초기화
         resetSelection()
         // 카드 다시 섞고 상태 초기화
-        setupCard()
+        setupCard(for: currentLevel)
     }
     
     // MARK: 랜덤으로 같은 숫자 10개
-    private func setupCard() {
-        let randomNumbers = Array(1...20).shuffled().prefix(10)
+    private func setupCard(for level: Int) {
+        // 1. 숫자범위 설정
+        let numberRange: ClosedRange<Int>
+        switch level {
+        case 1:
+            numberRange = 1...10
+        case 2...3:
+            numberRange = 1...15
+        case 4...6:
+            numberRange = 1...20
+        default:
+            numberRange = 1...25
+        }
+        
+        // 2. 쌍 개수 계산: 레벨 1 -> 10쌍, 이후 2쌍씩 증가
+        let pairCount = 10 + (level - 1) * 2
+        
+        // 3. 랜덤 숫자 뽑기 & 카드 만들기
+        let randomNumbers = Array(numberRange).shuffled().prefix(pairCount)
         let duplicatedNumbers = (randomNumbers + randomNumbers).shuffled()
         
-        cards = duplicatedNumbers.map { Card(number: $0)}
+        cards = duplicatedNumbers.map { Card(number: $0) }
         
-//        print("생성된 카드 숫자 배열: \(cards.map { $0.number })")
-//        print("생성된 카드 숫자 오름차순 배열: \(cards.map { $0.number }.sorted())")
+        print("생성된 카드 숫자 배열: \(cards.map { $0.number })")
+        print("생성된 카드 숫자 오름차순 배열: \(cards.map { $0.number }.sorted())")
+        print("생성된 카드 갯수: \(cards.count)")
         
-        
+        // 4. 카드 뷰 갱신
         cardCollectionView.reloadData()
     }
     
@@ -70,8 +89,8 @@ class CardViewController: UIViewController {
         
         let firstCard = cards[firstIndex.row]
         let secondCard = cards[secondIndex.row]
-                
-                
+        
+        
         guard let firstCell = cardCollectionView.cellForItem(at: firstIndex) as? CardCollectionViewCell,
               let secondCell = cardCollectionView.cellForItem(at: secondIndex) as? CardCollectionViewCell
         else { return }
