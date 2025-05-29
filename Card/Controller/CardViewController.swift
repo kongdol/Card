@@ -10,13 +10,15 @@ import UIKit
 class CardViewController: UIViewController {
     @IBOutlet weak var cardCollectionView: UICollectionView!
     
+    @IBOutlet weak var level: UILabel!
+    
     var firstSelectedIndexPath: IndexPath? // 첫번째 선택 셀 위치
     var secondSelectedIndexPath: IndexPath? // 두번째 선택 셀 위치
     var isSelectionLocked = false
     
     var cards: [Card] = []
     var wrongAttempts: Int = 0
-    var currentLevel: Int = 1
+    var currentLevel: Int = 5
     
     var pairCount: Int {
         return 10 + (currentLevel - 1) * 2
@@ -37,6 +39,8 @@ class CardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCard(for: currentLevel)
+        
+        level.text = "레벨 \(currentLevel)"
     }
     
     
