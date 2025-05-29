@@ -35,7 +35,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bef-CP-Gx0">
-                                <rect key="frame" x="16" y="798" width="100" height="40"/>
+                                <rect key="frame" x="16" y="772" width="100" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="5uu-Rx-8Ye"/>
                                     <constraint firstAttribute="height" constant="40" id="qNw-8x-fRY"/>
@@ -47,7 +47,7 @@
                                 </connections>
                             </button>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Iv2-2y-HM8">
-                                <rect key="frame" x="0.0" y="131" width="393" height="651"/>
+                                <rect key="frame" x="0.0" y="131" width="393" height="625"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="oTr-xm-1cK">
                                     <size key="itemSize" width="99" height="134"/>
@@ -125,12 +125,12 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="Bef-CP-Gx0" secondAttribute="bottom" constant="40" id="A4c-5y-mXL"/>
                             <constraint firstItem="b1O-3d-dqh" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="FBT-ch-Ixw"/>
                             <constraint firstItem="Iv2-2y-HM8" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="ONg-Jx-vGg"/>
                             <constraint firstItem="Bef-CP-Gx0" firstAttribute="top" secondItem="Iv2-2y-HM8" secondAttribute="bottom" constant="16" id="aA0-aV-3R1"/>
                             <constraint firstItem="Iv2-2y-HM8" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="eoJ-aI-1LH"/>
                             <constraint firstItem="b1O-3d-dqh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="hX0-Hk-9Hy"/>
-                            <constraint firstItem="Bef-CP-Gx0" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" constant="20" id="jSl-eV-Iad"/>
                             <constraint firstItem="Iv2-2y-HM8" firstAttribute="top" secondItem="b1O-3d-dqh" secondAttribute="bottom" constant="16" id="mVo-F1-GlQ"/>
                             <constraint firstItem="Bef-CP-Gx0" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="nVz-1G-Pt2"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="b1O-3d-dqh" secondAttribute="trailing" constant="16" id="xxY-7t-NwH"/>

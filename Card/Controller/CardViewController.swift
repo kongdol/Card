@@ -16,7 +16,7 @@ class CardViewController: UIViewController {
     
     var cards: [Card] = []
     var wrongAttempts: Int = 0
-    var currentLevel: Int = 7
+    var currentLevel: Int = 1
     
     var pairCount: Int {
         return 10 + (currentLevel - 1) * 2
@@ -50,8 +50,15 @@ class CardViewController: UIViewController {
         wrongAttempts = 0
         // 선택 상태 초기화
         resetSelection()
-        // 카드 다시 섞고 상태 초기화
-        setupCard(for: currentLevel)
+        
+        // 카드 배열 비우고 컬렉션뷰 초기화 -> 싹 사라지게
+        cards.removeAll()
+        cardCollectionView.reloadData()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.setupCard(for: self.currentLevel)
+        }
+        
     }
     
     // MARK: 랜덤으로 같은 숫자 10개
@@ -76,14 +83,21 @@ class CardViewController: UIViewController {
         let randomNumbers = Array(numberRange).shuffled().prefix(pairCount)
         let duplicatedNumbers = (randomNumbers + randomNumbers).shuffled()
         
+        // 애니메이션과 함께 리로드
         cards = duplicatedNumbers.map { Card(number: $0) }
         
-//        print("생성된 카드 숫자 배열: \(cards.map { $0.number })")
-//        print("생성된 카드 숫자 오름차순 배열: \(cards.map { $0.number }.sorted())")
-        print("생성된 카드 갯수: \(cards.count)")
-        
-        // 4. 카드 뷰 갱신
-        cardCollectionView.reloadData()
+        cardCollectionView.performBatchUpdates({
+            cardCollectionView.reloadSections(IndexSet(integer: 0))
+        }) { _ in
+            // 새로 리로드된 셀들에 애니메이션 적용
+            let cells = self.cardCollectionView.visibleCells
+            for (index, cell) in cells.enumerated() {
+                cell.alpha = 0
+                UIView.animate(withDuration: 0.3, delay: 0.05 * Double(index), options: [], animations: {
+                    cell.alpha = 1
+                })
+            }
+        }
     }
     
     // MARK: 선택초기화, 잠금해제

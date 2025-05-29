@@ -25,7 +25,12 @@ extension CardViewController: UICollectionViewDelegateFlowLayout {
         // 셀너비계산
         let shrinkFactor: CGFloat = (itemsPerRow == 7 ? 0.92 : 1.0)
         let itemWidth = floor(availableWidth / CGFloat(itemsPerRow) * shrinkFactor)
-        let itmeHeight = itemWidth * 1.4
+        var itmeHeight = itemWidth * 1.4
+        
+        if currentLevel == 1 {
+            itmeHeight *= 0.9
+        }
+        
         
         return CGSize(width: itemWidth, height: itmeHeight)
     }
