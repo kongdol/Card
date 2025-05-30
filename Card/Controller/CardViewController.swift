@@ -19,12 +19,17 @@ class CardViewController: UIViewController {
     var cards: [Card] = []
     var wrongAttempts: Int = 0
     var currentLevel: Int = 1
+    var corrctRate: Int = 0
     
     var pairCount: Int {
         return 10 + (currentLevel - 1) * 2
     }
     
-    // 1 - 4열
+    var successCount: Int = 0
+    
+    
+    
+    // 1 - 4열 
     // 2~3 - 5열
     // 4~6 - 6열
     // 7~9 - 7열
@@ -41,8 +46,6 @@ class CardViewController: UIViewController {
         setupCard(for: currentLevel)
         
         level.text = "레벨 \(currentLevel)"
-        
-        
     }
     
     func showResultImage(named imageName: String) {
@@ -126,8 +129,8 @@ class CardViewController: UIViewController {
             numberRange = 1...25
         }
         
-        // 2. 쌍 개수 계산: 레벨 1 -> 10쌍, 이후 2쌍씩 증가
-        let pairCount = 10 + (level - 1) * 2
+        // 2. 쌍 개수 계산: 레벨 1 -> 10쌍, 이후 2쌍씩 증가 -> 4장씩증가
+        let pairCount = 2//10 + (level - 1) * 2
         
         // 3. 랜덤 숫자 뽑기 & 카드 만들기
         let randomNumbers = Array(numberRange).shuffled().prefix(pairCount)
@@ -179,6 +182,9 @@ class CardViewController: UIViewController {
             cards[firstIndex.row].isMatched = true
             cards[secondIndex.row].isMatched = true
             
+            // 정답이면 +1
+            successCount += 1
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 firstCell.isHidden = true
                 secondCell.isHidden = true
@@ -193,6 +199,8 @@ class CardViewController: UIViewController {
             // 오답
             if isWrongAttempt {
                 showResultImage(named: "X")
+                
+                // 오답이면 + 1
                 wrongAttempts += 1
                 print("오답횟수 : \(wrongAttempts)")
             }
@@ -213,13 +221,23 @@ class CardViewController: UIViewController {
     func checkGameComplete() {
         let allMatched = cards.allSatisfy {$0.isMatched}
         if allMatched {
-            print("완료")
             goToResultView()
         }
     }
     
     func goToResultView() {
         performSegue(withIdentifier: "toResultView", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toResultView" {
+            if let resultVC = segue.destination as? ResultViewController {
+                
+                resultVC.currentLevel = self.currentLevel
+                resultVC.successCount = self.successCount
+                resultVC.wrongAttempts = self.wrongAttempts
+            }
+        }
     }
 }
 

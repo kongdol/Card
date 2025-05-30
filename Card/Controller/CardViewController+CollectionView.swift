@@ -42,7 +42,8 @@ extension CardViewController: UICollectionViewDelegate {
 // MARK: - DataSource - 갯수, 내용
 extension CardViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cards.count
+        return 4
+        //return cards.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
