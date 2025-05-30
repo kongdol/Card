@@ -18,7 +18,7 @@ class CardViewController: UIViewController {
     
     var cards: [Card] = []
     var wrongAttempts: Int = 0
-    var currentLevel: Int = 5
+    var currentLevel: Int = 1
     
     var pairCount: Int {
         return 10 + (currentLevel - 1) * 2
@@ -41,6 +41,52 @@ class CardViewController: UIViewController {
         setupCard(for: currentLevel)
         
         level.text = "레벨 \(currentLevel)"
+        
+        
+    }
+    
+    func showResultImage(named imageName: String) {
+        // 1. 이미지뷰 만들기
+        let imageView = UIImageView(image: UIImage(named: imageName))
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.alpha = 0 // 처음에는 안보이게
+        
+        // 2. 컬렉션뷰에 덮어 씌우기
+        view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: cardCollectionView.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: cardCollectionView.centerYAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: 300),
+            imageView.heightAnchor.constraint(equalToConstant: 300)
+        ])
+        
+        // 3. 애니메이션으로 표시 후 사라지게
+        UIView.animate(withDuration: 0.3, animations: {
+            imageView.alpha = 1
+        }) { _ in
+            UIView.animate(withDuration: 0.3, delay: 0.5, options: [], animations: {
+                imageView.alpha = 0
+            }) { _ in
+                imageView.removeFromSuperview()
+            }
+        }
+    }
+    
+    func cardPositionCheck() {
+        // number: [index1, index2, ...] 형식으로 딕셔너리 생성
+        var cardPositionMap: [Int: [Int]] = [:]
+
+        for (index, card) in cards.enumerated() {
+            cardPositionMap[card.number, default: []].append(index)
+        }
+
+        // 출력
+        for (number, indices) in cardPositionMap {
+            let adjustedIndices = indices.map { $0 + 1 } // 각 index +1 처리
+            print("카드 번호 \(number): 위치들 → \(adjustedIndices)")
+        }
     }
     
     
@@ -128,6 +174,7 @@ class CardViewController: UIViewController {
         let isMatch = firstCard.number == secondCard.number
         
         if isMatch {
+            showResultImage(named: "O")
             // 정답
             cards[firstIndex.row].isMatched = true
             cards[secondIndex.row].isMatched = true
@@ -137,11 +184,15 @@ class CardViewController: UIViewController {
                 secondCell.isHidden = true
                 self.resetSelection()
             }
+            
+            checkGameComplete()
         } else {
-            // 오답
+            // 다를때
             let isWrongAttempt = firstCard.hasBeenSeen || secondCard.hasBeenSeen
             
+            // 오답
             if isWrongAttempt {
+                showResultImage(named: "X")
                 wrongAttempts += 1
                 print("오답횟수 : \(wrongAttempts)")
             }
@@ -156,6 +207,19 @@ class CardViewController: UIViewController {
                 self.resetSelection()
             }
         }
+    }
+    
+    //MARK: 카드 다 맞추고 화면전환
+    func checkGameComplete() {
+        let allMatched = cards.allSatisfy {$0.isMatched}
+        if allMatched {
+            print("완료")
+            goToResultView()
+        }
+    }
+    
+    func goToResultView() {
+        performSegue(withIdentifier: "toResultView", sender: self)
     }
 }
 

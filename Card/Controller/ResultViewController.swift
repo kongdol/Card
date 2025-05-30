@@ -11,6 +11,9 @@ class ResultViewController: UIViewController {
 
     @IBOutlet weak var levelView: UIView!
     
+    @IBAction func continueButton(_ sender: UIButton) {
+        dismiss(animated: true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
